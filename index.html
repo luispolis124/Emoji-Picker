@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Custom Emoji Picker with Categories</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+    }
+    .emoji-picker-container {
+      width: 300px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      background: #f9f9f9;
+      padding: 10px;
+    }
+    .categories {
+      display: flex;
+      justify-content: space-around;
+      margin-bottom: 10px;
+    }
+    .categories button {
+      background: #eaeaea;
+      border: none;
+      border-radius: 4px;
+      padding: 5px 10px;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+    .categories button.active {
+      background: #d4d4d4;
+    }
+    .emoji-picker {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 5px;
+      border: 1px solid #ddd;
+      padding: 10px;
+      border-radius: 8px;
+      max-height: 200px;
+      overflow-y: auto;
+    }
+    .emoji {
+      width: 40px;
+      height: 40px;
+      cursor: pointer;
+      transition: transform 0.2s;
+    }
+    .emoji:hover {
+      transform: scale(1.2);
+    }
+    .output {
+      margin-top: 10px;
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      min-height: 50px;
+      background: #fff;
+    }
+  </style>
+</head>
+<body>
+  <h1>Emoji Picker with Categories</h1>
+  <div class="emoji-picker-container">
+    <div class="categories" id="categories">
+      <!-- Categories will be dynamically loaded -->
+    </div>
+    <div class="emoji-picker" id="emojiPicker">
+      <!-- Emojis will be dynamically loaded -->
+    </div>
+  </div>
+  <div class="output" id="output" contenteditable="true">
+    <!-- Output area for selected emojis -->
+  </div>
+
+  <script>
+    // Emoji categories with their respective emoji lists
+    const emojiData = {
+  "Smileys": [
+    { id: "U+1F600", src: "images/smile.png" },
+    { id: "U+1F602", src: "images/laugh.png" },
+    { id: "U+1F609", src: "images/wink.png" },
+    { id: "U+1F604", src: "images/grin.png" } // Novo emoji adicionado
+  ],
+  "Animals": [
+    { id: "U+1F981", src: "images/lion.png" },
+    { id: "U+1F436", src: "images/dog.png" },
+    { id: "U+1F431", src: "images/cat.png" },
+    { id: "U+1F42A", src: "images/camel.png" } // Novo emoji adicionado
+  ],
+  "Food": [
+    { id: "U+1F354", src: "images/burger.png" },
+    { id: "U+1F34E", src: "images/apple.png" },
+    { id: "U+1F36A", src: "images/cookie.png" },
+    { id: "U+1F35F", src: "images/fries.png" } // Novo emoji adicionado
+  ],
+  "Nature": [ // Nova categoria
+    { id: "U+2600", src: "images/sun.png" },
+    { id: "U+1F331", src: "images/plant.png" },
+    { id: "U+1F30A", src: "images/wave.png" }
+  ],
+  "Vehicles": [
+  { id: "U+1F697", src: "images/car.png" },
+  { id: "U+1F68C", src: "images/bus.png" },
+  { id: "U+1F6F5", src: "images/scooter.png" }
+]
+};
+
+    // Populate categories
+    const categories = document.getElementById('categories');
+    const emojiPicker = document.getElementById('emojiPicker');
+    const output = document.getElementById('output');
+
+    Object.keys(emojiData).forEach((category, index) => {
+      const button = document.createElement('button');
+      button.textContent = category;
+      button.dataset.category = category;
+      if (index === 0) button.classList.add('active');
+      categories.appendChild(button);
+    });
+
+    // Function to display emojis of a selected category
+    function displayEmojis(category) {
+      emojiPicker.innerHTML = ''; // Clear existing emojis
+      emojiData[category].forEach(emoji => {
+        const img = document.createElement('img');
+        img.classList.add('emoji');
+        img.src = emoji.src;
+        img.alt = emoji.id;
+        img.dataset.unicode = emoji.id;
+        emojiPicker.appendChild(img);
+      });
+    }
+
+    // Event listener for category buttons
+    categories.addEventListener('click', (event) => {
+      if (event.target.tagName === 'BUTTON') {
+        document.querySelectorAll('.categories button').forEach(btn => btn.classList.remove('active'));
+        event.target.classList.add('active');
+        const category = event.target.dataset.category;
+        displayEmojis(category);
+      }
+    });
+
+    // Add emoji to output on click
+    emojiPicker.addEventListener('click', (event) => {
+      if (event.target.classList.contains('emoji')) {
+        const unicode = event.target.dataset.unicode;
+        const imgSrc = event.target.src;
+        output.innerHTML += `<img src="${imgSrc}" alt="${unicode}" style="width:24px; height:24px;">`;
+      }
+    });
+
+    // Load the first category on page load
+    displayEmojis(Object.keys(emojiData)[0]);
+  </script>
+</body>
+</html>
